@@ -1,134 +1,106 @@
 <?php
 session_start();
-
-$errors = [];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $players = [];
-
-    for ($i = 1; $i <= 3; $i++) {
-        $ime = trim($_POST["ime$i"] ?? '');
-        $priimek = trim($_POST["priimek$i"] ?? '');
-        $naslov = trim($_POST["naslov$i"] ?? '');
-
-        if ($ime === '' || $priimek === '' || $naslov === '') {
-            $errors[] = "Izpolnite vse podatke za igralca $i.";
-        }
-
-        $players[] = [
-            'ime' => htmlspecialchars($ime, ENT_QUOTES, 'UTF-8'),
-            'priimek' => htmlspecialchars($priimek, ENT_QUOTES, 'UTF-8'),
-            'naslov' => htmlspecialchars($naslov, ENT_QUOTES, 'UTF-8')
-        ];
-    }
-
-    if (empty($errors)) {
-        $_SESSION['players'] = $players;
-        header('Location: index2.php');
-        exit;
-    }
-}
 ?>
+
 <!DOCTYPE html>
 <html lang="sl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vnos igralcev</title>
+    <title>Prijava igralcev</title>
     <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
+        body{
             font-family: Arial, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #171717, #3f3f46);
-            color: #fff;
+            background:#f2f2f2;
+            text-align:center;
         }
-        .box {
-            width: 920px;
-            max-width: 94%;
-            background: rgba(255,255,255,0.1);
-            padding: 28px;
-            border-radius: 18px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+
+        .box{
+            width:90%;
+            max-width:1100px;
+            margin:40px auto;
+            background:white;
+            padding:25px;
+            border-radius:10px;
         }
-        h1 { text-align: center; margin-top: 0; }
-        .players {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
+
+        form{
+            display:flex;
+            gap:20px;
+            justify-content:center;
+            align-items:flex-start;
+            flex-wrap:wrap;
         }
-        .player {
-            background: rgba(255,255,255,0.12);
-            padding: 18px;
-            border-radius: 14px;
+
+        .igralec{
+            background:#eeeeee;
+            padding:15px;
+            border-radius:10px;
+            width:300px;
         }
-        label { display: block; margin-top: 12px; font-weight: bold; }
-        input {
-            width: 100%;
-            margin-top: 6px;
-            padding: 11px;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
+
+        input{
+            width:90%;
+            padding:10px;
+            margin:6px 0;
         }
-        button {
-            width: 100%;
-            margin-top: 24px;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            background: #22c55e;
-            color: white;
+
+        h2{
+            background:#333;
+            color:white;
+            padding:10px;
+            margin-top:0;
         }
-        button:hover { background: #16a34a; }
-        .error {
-            background: #dc2626;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+
+        .submit-box{
+            width:100%;
+            margin-top:20px;
         }
-        @media (max-width: 780px) {
-            .players { grid-template-columns: 1fr; }
+
+        input[type=submit]{
+            width:250px;
+            background:green;
+            color:white;
+            border:none;
+            cursor:pointer;
+            font-size:18px;
+            border-radius:8px;
         }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h1>🎲 Vnos 3 igralcev</h1>
 
-        <?php if (!empty($errors)): ?>
-            <div class="error">
-                <?php foreach ($errors as $error): ?>
-                    <div><?= $error ?></div>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+<div class="box">
+    <h1>Vnos igralcev</h1>
 
-        <form method="post" action="index.php">
-            <div class="players">
-                <?php for ($i = 1; $i <= 3; $i++): ?>
-                    <div class="player">
-                        <h2>Igralec <?= $i ?></h2>
-                        <label>Ime</label>
-                        <input type="text" name="ime<?= $i ?>" required>
+    <form action="index2.php" method="POST">
 
-                        <label>Priimek</label>
-                        <input type="text" name="priimek<?= $i ?>" required>
+        <div class="igralec">
+            <h2>Igralec 1</h2>
+            <input type="text" name="ime1" placeholder="Ime" required>
+            <input type="text" name="priimek1" placeholder="Priimek" required>
+            <input type="text" name="naslov1" placeholder="Naslov" required>
+        </div>
 
-                        <label>Naslov</label>
-                        <input type="text" name="naslov<?= $i ?>" required>
-                    </div>
-                <?php endfor; ?>
-            </div>
-            <button type="submit">Začni igro</button>
-        </form>
-    </div>
+        <div class="igralec">
+            <h2>Igralec 2</h2>
+            <input type="text" name="ime2" placeholder="Ime" required>
+            <input type="text" name="priimek2" placeholder="Priimek" required>
+            <input type="text" name="naslov2" placeholder="Naslov" required>
+        </div>
+
+        <div class="igralec">
+            <h2>Igralec 3</h2>
+            <input type="text" name="ime3" placeholder="Ime" required>
+            <input type="text" name="priimek3" placeholder="Priimek" required>
+            <input type="text" name="naslov3" placeholder="Naslov" required>
+        </div>
+
+        <div class="submit-box">
+            <input type="submit" value="Začni igro">
+        </div>
+
+    </form>
+</div>
+
 </body>
 </html>
