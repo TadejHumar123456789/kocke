@@ -1,181 +1,170 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['players']) || count($_SESSION['players']) !== 3) {
-    header('Location: index.php');
-    exit;
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+    $_SESSION["players"] = [
+        [
+            "ime" => $_POST["ime1"],
+            "priimek" => $_POST["priimek1"],
+            "naslov" => $_POST["naslov1"]
+        ],
+        [
+            "ime" => $_POST["ime2"],
+            "priimek" => $_POST["priimek2"],
+            "naslov" => $_POST["naslov2"]
+        ],
+        [
+            "ime" => $_POST["ime3"],
+            "priimek" => $_POST["priimek3"],
+            "naslov" => $_POST["naslov3"]
+        ]
+    ];
 }
 
-$players = $_SESSION['players'];
-$gamePlayed = false;
-$winners = [];
-$maxSum = 0;
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vrzi'])) {
-    $gamePlayed = true;
-
-    foreach ($players as $key => $player) {
-        $dice = [rand(1, 6), rand(1, 6), rand(1, 6)];
-        $sum = array_sum($dice);
-
-        $players[$key]['dice'] = $dice;
-        $players[$key]['sum'] = $sum;
-
-        if ($sum > $maxSum) {
-            $maxSum = $sum;
-            $winners = [$players[$key]];
-        } elseif ($sum === $maxSum) {
-            $winners[] = $players[$key];
-        }
-    }
-
-    $_SESSION['last_game'] = $players;
+if(!isset($_SESSION["players"])){
+    header("Location: index.php");
+    exit();
 }
+
+$players = $_SESSION["players"];
 ?>
+
 <!DOCTYPE html>
 <html lang="sl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Igra s kockami</title>
+    <title>Igra kock</title>
+
     <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            background: radial-gradient(circle at top, #52525b, #18181b 65%);
-            color: white;
-            padding: 30px;
+        body{
+            font-family:Arial, sans-serif;
+            background:#222;
+            color:white;
+            text-align:center;
         }
-        h1, .center { text-align: center; }
-        .board {
-            max-width: 1100px;
-            margin: 0 auto;
+
+        .players-wrap{
+            display:flex;
+            justify-content:center;
+            gap:20px;
+            flex-wrap:wrap;
+            margin-top:25px;
         }
-        .players {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-top: 25px;
+
+        .player{
+            background:#333;
+            width:300px;
+            padding:20px;
+            border-radius:10px;
         }
-        .card {
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 18px;
-            padding: 20px;
-            box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+
+        img{
+            width:80px;
+            margin:5px;
         }
-        .card h2 { margin-top: 0; }
-        .dice-row {
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-            margin: 20px 0;
-            min-height: 70px;
+
+        button{
+            padding:15px 30px;
+            font-size:20px;
+            background:green;
+            color:white;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
         }
-        .dice-row img {
-            width: 64px;
-            height: 64px;
-            border-radius: 9px;
+
+        button:disabled{
+            background:gray;
+            cursor:not-allowed;
         }
-        .sum {
-            font-size: 22px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .btn {
-            border: none;
-            border-radius: 14px;
-            padding: 15px 40px;
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-            background: #ef4444;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(239,68,68,0.35);
-        }
-        .btn:hover { background: #dc2626; }
-        .winner {
-            max-width: 700px;
-            margin: 30px auto 0;
-            padding: 22px;
-            border-radius: 18px;
-            background: rgba(34,197,94,0.18);
-            border: 1px solid rgba(34,197,94,0.45);
-            text-align: center;
-            font-size: 20px;
-        }
-        .info {
-            text-align: center;
-            opacity: 0.85;
-            margin-top: 14px;
-        }
-        @media (max-width: 850px) {
-            .players { grid-template-columns: 1fr; }
+
+        .winner{
+            margin-top:25px;
+            color:#7CFF7C;
         }
     </style>
 </head>
 <body>
-    <div class="board">
-        <h1>🎲 Simulacija igranja z igralnimi kockami</h1>
 
-        <?php if (!$gamePlayed): ?>
-            <div class="center">
-                <form method="post" action="index2.php" onsubmit="startAnimation()">
-                    <button class="btn" type="submit" name="vrzi">Vrzi kocke</button>
-                </form>
-            </div>
-        <?php endif; ?>
+<h1>Simulacija metanja kock</h1>
 
-        <div class="players">
-            <?php foreach ($players as $player): ?>
-                <div class="card">
-                    <h2><?= $player['ime'] . ' ' . $player['priimek'] ?></h2>
-                    <p><strong>Naslov:</strong> <?= $player['naslov'] ?></p>
+<button id="gumb" onclick="vrzi()">VRZI KOCKE</button>
 
-                    <div class="dice-row">
-                        <?php if ($gamePlayed): ?>
-                            <?php foreach ($player['dice'] as $die): ?>
-                                <img class="final-dice" src="dice<?= $die ?>.gif" alt="Kocka <?= $die ?>">
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <img class="anim-dice" src="dice-anim.gif" alt="Animacija kocke">
-                            <img class="anim-dice" src="dice-anim.gif" alt="Animacija kocke">
-                            <img class="anim-dice" src="dice-anim.gif" alt="Animacija kocke">
-                        <?php endif; ?>
-                    </div>
+<div id="rezultat"></div>
 
-                    <?php if ($gamePlayed): ?>
-                        <div class="sum">Seštevek: <?= $player['sum'] ?></div>
-                    <?php endif; ?>
-                </div>
-            <?php endforeach; ?>
-        </div>
+<script>
+let players = <?php echo json_encode($players); ?>;
 
-        <?php if ($gamePlayed): ?>
-            <div class="winner">
-                <strong>Zmagovalec/i:</strong><br>
-                <?php foreach ($winners as $winner): ?>
-                    <?= $winner['ime'] . ' ' . $winner['priimek'] ?>, seštevek: <?= $winner['sum'] ?><br>
-                <?php endforeach; ?>
-            </div>
-            <div class="info">Rezultat bo prikazan 10 sekund, nato se stran preusmeri nazaj na obrazec.</div>
+function vrzi(){
+    document.getElementById("gumb").disabled = true;
 
-            <script>
-                setTimeout(function () {
-                    window.location.href = 'index.php';
-                }, 10000);
-            </script>
-        <?php endif; ?>
-    </div>
+    let meti = [];
+    let max = 0;
+    let winners = [];
 
-    <script>
-        function startAnimation() {
-            document.querySelectorAll('.dice-row img').forEach(function (img) {
-                img.src = 'dice-anim.gif';
-            });
+    for(let i = 0; i < players.length; i++){
+        let s1 = Math.floor(Math.random() * 6) + 1;
+        let s2 = Math.floor(Math.random() * 6) + 1;
+        let s3 = Math.floor(Math.random() * 6) + 1;
+        let sum = s1 + s2 + s3;
+
+        meti.push({
+            kocke: [s1, s2, s3],
+            vsota: sum
+        });
+
+        if(sum > max){
+            max = sum;
+            winners = [players[i].ime + " " + players[i].priimek];
+        }else if(sum == max){
+            winners.push(players[i].ime + " " + players[i].priimek);
         }
-    </script>
+    }
+
+    let html = '<div class="players-wrap">';
+
+    for(let i = 0; i < players.length; i++){
+        html += `
+            <div class="player">
+                <h2>${players[i].ime} ${players[i].priimek}</h2>
+                <p><b>Naslov:</b> ${players[i].naslov}</p>
+
+                <div id="dice${i}">
+                    <img src="images/dice-anim.gif">
+                    <img src="images/dice-anim.gif">
+                    <img src="images/dice-anim.gif">
+                </div>
+
+                <h3 id="vsota${i}"></h3>
+            </div>
+        `;
+    }
+
+    html += '</div>';
+
+    document.getElementById("rezultat").innerHTML = html;
+
+    setTimeout(() => {
+        for(let i = 0; i < players.length; i++){
+            document.getElementById("dice" + i).innerHTML = `
+                <img src="images/dice${meti[i].kocke[0]}.gif">
+                <img src="images/dice${meti[i].kocke[1]}.gif">
+                <img src="images/dice${meti[i].kocke[2]}.gif">
+            `;
+
+            document.getElementById("vsota" + i).innerHTML = "Vsota: " + meti[i].vsota;
+        }
+
+        document.getElementById("rezultat").innerHTML += `
+            <h1 class="winner">Zmagovalec/i: ${winners.join(", ")}</h1>
+        `;
+    }, 2000);
+
+    setTimeout(() => {
+        window.location.href = "index.php";
+    }, 10000);
+}
+</script>
+
 </body>
 </html>
