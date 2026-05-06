@@ -7,6 +7,9 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <title>Prijava igralcev</title>
+
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+
     <style>
         body{
             font-family: Arial, sans-serif;
@@ -62,7 +65,7 @@ session_start();
             color:white;
             border:none;
             cursor:pointer;
-            font-size:18px;
+            font-size:22px;
             border-radius:8px;
         }
     </style>

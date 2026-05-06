@@ -33,14 +33,37 @@ $players = $_SESSION["players"];
 <html lang="sl">
 <head>
     <meta charset="UTF-8">
+
     <title>Igra kock</title>
+
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
 
     <style>
         body{
-            font-family:Arial, sans-serif;
-            background:#222;
+            margin:0;
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background:#1d1d1d;
+            font-family:Arial;
             color:white;
-            text-align:center;
+            flex-direction:column;
+        }
+
+        button{
+            padding:25px 60px;
+            font-size:42px;
+            background:green;
+            color:white;
+            border:none;
+            border-radius:15px;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        button:hover{
+            transform:scale(1.05);
         }
 
         .players-wrap{
@@ -48,7 +71,7 @@ $players = $_SESSION["players"];
             justify-content:center;
             gap:20px;
             flex-wrap:wrap;
-            margin-top:25px;
+            margin-top:40px;
         }
 
         .player{
@@ -56,6 +79,7 @@ $players = $_SESSION["players"];
             width:300px;
             padding:20px;
             border-radius:10px;
+            text-align:center;
         }
 
         img{
@@ -63,60 +87,49 @@ $players = $_SESSION["players"];
             margin:5px;
         }
 
-        button{
-            padding:15px 30px;
-            font-size:20px;
-            background:green;
-            color:white;
-            border:none;
-            border-radius:10px;
-            cursor:pointer;
-        }
-
-        button:disabled{
-            background:gray;
-            cursor:not-allowed;
-        }
-
         .winner{
-            margin-top:25px;
+            margin-top:30px;
             color:#7CFF7C;
+            font-size:38px;
         }
     </style>
 </head>
 <body>
-
-<h1>Simulacija metanja kock</h1>
 
 <button id="gumb" onclick="vrzi()">VRZI KOCKE</button>
 
 <div id="rezultat"></div>
 
 <script>
+
 let players = <?php echo json_encode($players); ?>;
 
 function vrzi(){
-    document.getElementById("gumb").disabled = true;
+
+    document.getElementById("gumb").style.display = "none";
 
     let meti = [];
     let max = 0;
     let winners = [];
 
     for(let i = 0; i < players.length; i++){
+
         let s1 = Math.floor(Math.random() * 6) + 1;
         let s2 = Math.floor(Math.random() * 6) + 1;
         let s3 = Math.floor(Math.random() * 6) + 1;
+
         let sum = s1 + s2 + s3;
 
         meti.push({
-            kocke: [s1, s2, s3],
-            vsota: sum
+            kocke:[s1,s2,s3],
+            vsota:sum
         });
 
         if(sum > max){
             max = sum;
             winners = [players[i].ime + " " + players[i].priimek];
-        }else if(sum == max){
+        }
+        else if(sum == max){
             winners.push(players[i].ime + " " + players[i].priimek);
         }
     }
@@ -124,19 +137,23 @@ function vrzi(){
     let html = '<div class="players-wrap">';
 
     for(let i = 0; i < players.length; i++){
+
         html += `
-            <div class="player">
-                <h2>${players[i].ime} ${players[i].priimek}</h2>
-                <p><b>Naslov:</b> ${players[i].naslov}</p>
+        <div class="player">
 
-                <div id="dice${i}">
-                    <img src="images/dice-anim.gif">
-                    <img src="images/dice-anim.gif">
-                    <img src="images/dice-anim.gif">
-                </div>
+            <h2>${players[i].ime} ${players[i].priimek}</h2>
 
-                <h3 id="vsota${i}"></h3>
+            <p>${players[i].naslov}</p>
+
+            <div id="dice${i}">
+                <img src="images/dice-anim.gif">
+                <img src="images/dice-anim.gif">
+                <img src="images/dice-anim.gif">
             </div>
+
+            <h3 id="vsota${i}"></h3>
+
+        </div>
         `;
     }
 
@@ -145,25 +162,32 @@ function vrzi(){
     document.getElementById("rezultat").innerHTML = html;
 
     setTimeout(() => {
+
         for(let i = 0; i < players.length; i++){
-            document.getElementById("dice" + i).innerHTML = `
+
+            document.getElementById("dice"+i).innerHTML = `
                 <img src="images/dice${meti[i].kocke[0]}.gif">
                 <img src="images/dice${meti[i].kocke[1]}.gif">
                 <img src="images/dice${meti[i].kocke[2]}.gif">
             `;
 
-            document.getElementById("vsota" + i).innerHTML = "Vsota: " + meti[i].vsota;
+            document.getElementById("vsota"+i).innerHTML =
+            "Vsota: " + meti[i].vsota;
         }
 
         document.getElementById("rezultat").innerHTML += `
-            <h1 class="winner">Zmagovalec/i: ${winners.join(", ")}</h1>
+            <h1 class="winner">
+                Zmagovalec/i: ${winners.join(", ")}
+            </h1>
         `;
+
     }, 2000);
 
     setTimeout(() => {
         window.location.href = "index.php";
     }, 10000);
 }
+
 </script>
 
 </body>
