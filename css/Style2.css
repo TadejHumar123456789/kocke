@@ -1,0 +1,48 @@
+ 
+        body{
+            font-family:Arial, sans-serif;
+            background:#222;
+            color:white;
+            text-align:center;
+        }
+
+        .players-wrap{
+            display:flex;
+            justify-content:center;
+            gap:20px;
+            flex-wrap:wrap;
+            margin-top:25px;
+        }
+
+        .player{
+            background:#333;
+            width:300px;
+            padding:20px;
+            border-radius:10px;
+        }
+
+        img{
+            width:80px;
+            margin:5px;
+        }
+
+        button{
+            padding:15px 30px;
+            font-size:20px;
+            background:green;
+            color:white;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+        }
+
+        button:disabled{
+            background:gray;
+            cursor:not-allowed;
+        }
+
+        .winner{
+            margin-top:25px;
+            color:#7CFF7C;
+        }
+     

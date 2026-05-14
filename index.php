@@ -7,68 +7,7 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <title>Prijava igralcev</title>
-
-    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
-
-    <style>
-        body{
-            font-family: Arial, sans-serif;
-            background:#f2f2f2;
-            text-align:center;
-        }
-
-        .box{
-            width:90%;
-            max-width:1100px;
-            margin:40px auto;
-            background:white;
-            padding:25px;
-            border-radius:10px;
-        }
-
-        form{
-            display:flex;
-            gap:20px;
-            justify-content:center;
-            align-items:flex-start;
-            flex-wrap:wrap;
-        }
-
-        .igralec{
-            background:#eeeeee;
-            padding:15px;
-            border-radius:10px;
-            width:300px;
-        }
-
-        input{
-            width:90%;
-            padding:10px;
-            margin:6px 0;
-        }
-
-        h2{
-            background:#333;
-            color:white;
-            padding:10px;
-            margin-top:0;
-        }
-
-        .submit-box{
-            width:100%;
-            margin-top:20px;
-        }
-
-        input[type=submit]{
-            width:250px;
-            background:green;
-            color:white;
-            border:none;
-            cursor:pointer;
-            font-size:22px;
-            border-radius:8px;
-        }
-    </style>
+	<link rel="stylesheet" href="css/Style1.css">
 </head>
 <body>
 
